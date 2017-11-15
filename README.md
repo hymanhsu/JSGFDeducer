@@ -8,22 +8,12 @@ JSGF解析
 
 #功能介绍
 
+输入一句话，可以解析出相关的各种词槽信息，辅助业务程序进行句子意图的理解
+
 
 <br><br>
 
-#开发成员
-
-徐华海 : xuhuahai@sogou-inc.com, Kevin.XU
-
-<br><br>
-
-#依赖
-
-请先安装cdeps模块
-
-<br><br>
-
-#普通编译
+#编译
 
 mkdir build
 
@@ -44,9 +34,7 @@ make install
 <br>
 2, 目标规则应该以rule_或pattern_开头
 <br>
-3, WILDCAST 是一个笔误，应该改为 WILDCARD
-<br>
-4, 所有正则词典名为 REG.*, 所有普通词典名为 USER.*
+3, 所有正则词典名为 REG.*, 所有普通词典名为 USER.*
 <br>
 
 
