@@ -1,0 +1,14 @@
+#JSGF V1.0;
+
+grammar test4;
+
+public <main> = <command1>|<command2>;
+
+<command1> = 打开<app>{Intent.cmd1} | 创建<app>;
+
+<command2> = 打开<topic>{Intent.cmd2};
+
+<app> = 微博|微信;
+
+<topic> = 微博|运动;
+

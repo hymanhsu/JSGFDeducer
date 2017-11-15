@@ -1,0 +1,8 @@
+#JSGF V1.0 UTF-8;
+
+grammar test;
+
+public <main> = (<pattern_1>){Domain.test};
+
+<pattern_1> = 给我(<WILDCARD>+){something}吧;
+

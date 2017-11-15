@@ -1,0 +1,7 @@
+#JSGF V1.0;
+
+grammar test2;
+
+public <app> = 微博|微信;
+
+public <topic> = 政治|运动;

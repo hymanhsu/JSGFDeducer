@@ -1,0 +1,16 @@
+#JSGF V1.0;
+
+grammar test7;
+
+public <main> = (<entries>){Domain.test};
+
+<entries> = <rule_command2>|<rule_command1>;
+
+<rule_command2> = (打开(<app1>|<app2>)*){Intent.cmd1};
+
+<rule_command1> = (打开((<app1>)+){appname}){Intent.cmd2};
+
+<app1> = 微博|微信;
+
+<app2> = 支付宝|百度钱包;
+

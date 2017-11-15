@@ -1,0 +1,31 @@
+#JSGF V1.0 ISO8859-5;
+
+grammar weather;
+
+public <main> = (<rule_weather_1010010_4_weather>){Domain.weather};
+
+
+<rule_weather_1010010_4_weather> = ([([搜狗][<USER.nomean_begin>])|(([那|请][再][给我|帮我|替我][再]|[<USER.nomean_begin>])<weather_search_key_common>[下|一下])]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}]
+[(<REG.NUMBER>天内|<weather_date_unclear_slot>|<REG.DATE>|<weather_day_number_slot>|<weather_date_conflict_slot>|<REG.TIME>){time}]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}][的]
+[<weather_key_aid_begin_common>]<weather_key_weather>[<weather_key_aid_end_common>][<USER.nomean_end>]){Intent.get_weather};
+
+
+
+//dict
+<weather_search_key_common> = 查;
+<weather_day_number_slot> = 下午|现在;
+
+
+
+<weather_date_unclear_slot> = 二天;
+<weather_date_conflict_slot> = 本半星期;
+<weather_place_supplement_slot> = 西沙群岛;
+
+
+<weather_key_aid_begin_common> = 平均;
+<weather_key_weather> = 天气;
+
+
+<weather_key_aid_end_common> = 怎么样;

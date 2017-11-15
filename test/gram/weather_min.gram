@@ -1,0 +1,15 @@
+#JSGF V1.0 ISO8859-5;
+
+grammar weather;
+
+public <main> = (<rule_weather_1010010_4_weather>){Domain.weather};
+
+
+<rule_weather_1010010_4_weather> = ([(([<USER.nomean_begin>])<weather_search_key_common>[下|一下])]
+[(<USER.PLACE>|<USER.city>[<USER.country>]|<USER.country>){geo}]
+[(<REG.DATE>|<REG.TIME>){time}]
+){Intent.get_weather};
+
+<weather_search_key_common> = 查;
+
+

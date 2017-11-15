@@ -1,0 +1,14 @@
+#JSGF V1.0;
+
+grammar test3;
+
+import <test2.*>;
+
+public <main> = <rule_command1>|<rule_command2>;
+
+<rule_command1> = 打开<test2.app>{Intent.cmd1};
+
+<rule_command2> = 关注<test2.topic>{Intent.cmd2};
+
+
+

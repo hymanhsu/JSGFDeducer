@@ -1,0 +1,20 @@
+#JSGF V1.0 UTF-8;
+
+grammar test;
+
+// public <main> = <a><b>;
+// <a> = A | AB ;
+// <b> = BC | C ;
+
+public <main> = <a>D;
+
+<a> = <b> | <c>;
+
+<b> = <d><e>;
+<c> = <f><g>;
+
+<d> = A ;
+<e> = BC ;
+
+<f> = AB ;
+<g> = C ;

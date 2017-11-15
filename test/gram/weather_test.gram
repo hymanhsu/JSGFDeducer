@@ -1,0 +1,410 @@
+#JSGF V1.0 ISO8859-5;
+
+grammar weather;
+
+public <main> = (<rule_weather_1010011_0_humidity>|<rule_weather_1010011_0_temp>|<rule_weather_1010011_0_weather>|<rule_weather_1010011_0_uv>|<rule_weather_1010011_1_carwash>|<rule_weather_1010011_1_weather>|
+<rule_weather_1010010_0>|<rule_weather_1010010_0_fog>|<rule_weather_1010010_0_haze>|<rule_weather_1010010_0_rain>|<rule_weather_1010010_0_snow>|<rule_weather_1010010_0_temp>|<rule_weather_1010010_0_weather>|<rule_weather_1010010_0_wind>|
+<rule_weather_1010010_1_fog>|<rule_weather_1010010_1_haze>|<rule_weather_1010010_1_rain>|<rule_weather_1010010_1_snow>|<rule_weather_1010010_1_temp>|<rule_weather_1010010_1_weather>|<rule_weather_1010010_1_wind>|
+<rule_weather_1010010_2>|<rule_weather_1010010_2_fog>|<rule_weather_1010010_2_hail>|<rule_weather_1010010_2_haze>|<rule_weather_1010010_2_rain>|<rule_weather_1010010_2_snow>|<rule_weather_1010010_2_weather>|<rule_weather_1010010_2_wind>|
+<rule_weather_1010010_3_fog>|<rule_weather_1010010_3_hail>|<rule_weather_1010010_3_haze>|<rule_weather_1010010_3_rain>|<rule_weather_1010010_3_snow>|<rule_weather_1010010_3_weather>|<rule_weather_1010010_3_wind>|
+<rule_weather_1010010_4_carwash>|<rule_weather_1010010_4_dress>|<rule_weather_1010010_4_haze>|<rule_weather_1010010_4_humidity>|<rule_weather_1010010_4_rain>|<rule_weather_1010010_4_temp>|<rule_weather_1010010_4_uv>|<rule_weather_1010010_4_weather>|<rule_weather_1010010_4_wind>|
+<rule_weather_1010010_5>|<rule_weather_1010010_6_rain>|<rule_weather_1010010_6_uv>|<rule_weather_1010010_6_weather>|<rule_weather_1010010_7_temp>|<rule_weather_1010010_7_weather>|<rule_weather_1010010_7_wind>){Domain.weather};
+
+//Patterns
+//那未来2天呢？接下来几天呢？最近一周的如何呢？
+<weather_1015003_0> = [那](<REG.NUMBER>(天|周)内|未来<REG.NUMBER>(天|周)|<USER.DATE_UNCLEAR>){time}<weather_context_nomeanend_common>;
+//帮我搜索下2天内的吧，查下未来2天的吧，查查最近一周怎么样？
+<weather_1015003_1> = [那][给我|帮我|替我]<weather_search_key_common>[下|一下](<REG.NUMBER>(天|周)内|未来<REG.NUMBER>(天|周)|<USER.DATE_UNCLEAR>){time}(<weather_context_nomeanend_common>|的吧|吧);
+//再帮我找下最近2天的吧，那再给我查下未来2周的吧
+<weather_1015003_2> = [那]再(给我|帮我|替我)<weather_search_key_common>[下|一下](<REG.NUMBER>(天|周)内|未来<REG.NUMBER>(天|周)|<USER.DATE_UNCLEAR>){time}(<weather_context_nomeanend_common>|的吧|吧);
+	
+//那明天上午呢？
+<weather_1015002_0> = [那](<REG.DATE>|<weather_day_number_slot>){time}[<weather_context_nomeanend_common>];
+//搜索下明天上午的吧
+<weather_1015002_1> = [那][给我|帮我|替我]<weather_search_key_common>[下|一下](<REG.DATE>|<weather_day_number_slot>){time}[<weather_context_nomeanend_common>|吧];
+//再帮我查下明天上午的吧
+<weather_1015002_2> = [那]再(给我|帮我|替我)<weather_search_key_common>[下|一下](<REG.DATE>|<weather_day_number_slot>){time}[<weather_context_nomeanend_common>|吧];
+//再找下明天上午的吧
+<weather_1015002_3> = [那][给我|帮我|替我]再<weather_search_key_common>[下|一下](<REG.DATE>|<weather_day_number_slot>){time}[<weather_context_nomeanend_common>|的吧|吧];
+
+//那广州呢？
+<weather_1015001_0> = [那](<USER.PLACE>){geo}[<weather_context_nomeanend_common>];
+//帮我再查下广州的吧
+<weather_1015001_1> = [那][给我|帮我|替我][再]<weather_search_key_common>[下|一下](<USER.PLACE>){geo}[<weather_context_nomeanend_common>|的吧|吧];
+//再帮我查下广州的吧
+<weather_1015001_2> = [那]再(给我|帮我|替我)<weather_search_key_common>[下|一下](<USER.PLACE>){geo}[<weather_context_nomeanend_common>|吧];
+
+//明天上午的呢？广州的呢？广州最近一周的如何？
+<weather_strong_slot> = [搜狗][<USER.nomean_begin>]((<REG.NUMBER>天内|<weather_date_unclear_slot>|<REG.DATE>|<weather_day_number_slot>|<weather_date_conflict_slot>|<REG.TIME>){time}
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>){geo}]|[(<REG.NUMBER>天内|<weather_date_unclear_slot>|<REG.DATE>|<weather_day_number_slot>|<weather_date_conflict_slot>|<REG.TIME>){time}]
+(外边|<USER.PLACE>|<weather_place_supplement_slot>){geo})[<USER.nomean_end>](<USER.context_end>);
+
+
+//会不会很冷？非常炎热，今天冷不冷？外面天气热吗？今天广州天气热，明天天气冷吗
+<rule_weather_1010011_0_humidity> = ([([搜狗][<USER.nomean_begin>])|(([那|请][再][给我|帮我|替我][再]|[<USER.nomean_begin>])<weather_search_key_common>[下|一下])]
+((<REG.NUMBER>天内|<weather_date_unclear_slot>|<REG.DATE>|<weather_day_number_slot>|<weather_date_conflict_slot>|<REG.TIME>){time}[(外边|<USER.PLACE>|<USER.city>[<USER.country>]|<USER.country>){geo}]|
+[(<REG.NUMBER>天内|<weather_date_unclear_slot>|<REG.DATE>|<weather_day_number_slot>|<weather_date_conflict_slot>|<REG.TIME>){time}](外边|<USER.PLACE>|<USER.city>[<USER.country>]|<USER.country>){geo}|
+(<REG.NUMBER>天内|<weather_date_unclear_slot>|<REG.DATE>|<weather_day_number_slot>|<weather_date_conflict_slot>|<REG.TIME>){time}(外边|<USER.PLACE>|<USER.city>[<USER.country>]|<USER.country>){geo})[的]
+[<weather_key>][空气质量][<weather_adj_aid_begin_common>]<weather_adj_humidity>[<weather_adj_aid_end_common>][<USER.nomean_end>]){Intent.get_humidity};
+<rule_weather_1010011_0_temp> = ([([搜狗][<USER.nomean_begin>])|(([那|请][再][给我|帮我|替我][再]|[<USER.nomean_begin>])<weather_search_key_common>[下|一下])]
+((<REG.NUMBER>天内|<weather_date_unclear_slot>|<REG.DATE>|<weather_day_number_slot>|<weather_date_conflict_slot>|<REG.TIME>){time}[(外边|<USER.PLACE>|<USER.city>[<USER.country>]|<USER.country>){geo}]|
+[(<REG.NUMBER>天内|<weather_date_unclear_slot>|<REG.DATE>|<weather_day_number_slot>|<weather_date_conflict_slot>|<REG.TIME>){time}](外边|<USER.PLACE>|<USER.city>[<USER.country>]|<USER.country>){geo}|
+(<REG.NUMBER>天内|<weather_date_unclear_slot>|<REG.DATE>|<weather_day_number_slot>|<weather_date_conflict_slot>|<REG.TIME>){time}(外边|<USER.PLACE>|<USER.city>[<USER.country>]|<USER.country>){geo})[的]
+[<weather_key>][空气质量][<weather_adj_aid_begin_common>]<weather_adj_temp>[<weather_adj_aid_end_common>][<USER.nomean_end>]){Intent.get_temperature};
+<rule_weather_1010011_0_weather> = ([([搜狗][<USER.nomean_begin>])|(([那|请][再][给我|帮我|替我][再]|[<USER.nomean_begin>])<weather_search_key_common>[下|一下])]
+((<REG.NUMBER>天内|<weather_date_unclear_slot>|<REG.DATE>|<weather_day_number_slot>|<weather_date_conflict_slot>|<REG.TIME>){time}[(外边|<USER.PLACE>|<USER.city>[<USER.country>]|<USER.country>){geo}]|
+[(<REG.NUMBER>天内|<weather_date_unclear_slot>|<REG.DATE>|<weather_day_number_slot>|<weather_date_conflict_slot>|<REG.TIME>){time}](外边|<USER.PLACE>|<USER.city>[<USER.country>]|<USER.country>){geo}|
+(<REG.NUMBER>天内|<weather_date_unclear_slot>|<REG.DATE>|<weather_day_number_slot>|<weather_date_conflict_slot>|<REG.TIME>){time}(外边|<USER.PLACE>|<USER.city>[<USER.country>]|<USER.country>){geo})[的]
+[<weather_key>][空气质量][<weather_adj_aid_begin_common>]<weather_adj_weather>[<weather_adj_aid_end_common>][<USER.nomean_end>]){Intent.get_weather};
+<rule_weather_1010011_0_uv> = ([([搜狗][<USER.nomean_begin>])|(([那|请][再][给我|帮我|替我][再]|[<USER.nomean_begin>])<weather_search_key_common>[下|一下])]
+((<REG.NUMBER>天内|<weather_date_unclear_slot>|<REG.DATE>|<weather_day_number_slot>|<weather_date_conflict_slot>|<REG.TIME>){time}[(外边|<USER.PLACE>|<USER.city>[<USER.country>]|<USER.country>){geo}]|
+[(<REG.NUMBER>天内|<weather_date_unclear_slot>|<REG.DATE>|<weather_day_number_slot>|<weather_date_conflict_slot>|<REG.TIME>){time}](外边|<USER.PLACE>|<USER.city>[<USER.country>]|<USER.country>){geo}|
+(<REG.NUMBER>天内|<weather_date_unclear_slot>|<REG.DATE>|<weather_day_number_slot>|<weather_date_conflict_slot>|<REG.TIME>){time}(外边|<USER.PLACE>|<USER.city>[<USER.country>]|<USER.country>){geo})[的]
+[<weather_key>][空气质量][<weather_adj_aid_begin_common>]<weather_adj_uv>[<weather_adj_aid_end_common>][<USER.nomean_end>]){Intent.get_uv};
+
+
+//适合洗车吗？需要带伞吗？明天我需要带伞吗？
+<rule_weather_1010011_1_carwash> = ([([搜狗][<USER.nomean_begin>])|(([那|请][再][给我|帮我|替我][再]|[<USER.nomean_begin>])<weather_search_key_common>[下|一下])][我]
+((<REG.NUMBER>天内|<weather_date_unclear_slot>|<REG.DATE>|<weather_day_number_slot>|<weather_date_conflict_slot>|<REG.TIME>){time}[(外边|<USER.PLACE>|<USER.city>[<USER.country>]|<USER.country>){geo}]|
+[(<REG.NUMBER>天内|<weather_date_unclear_slot>|<REG.DATE>|<weather_day_number_slot>|<weather_date_conflict_slot>|<REG.TIME>){time}](外边|<USER.PLACE>|<USER.city>[<USER.country>]|<USER.country>){geo}|
+(<REG.NUMBER>天内|<weather_date_unclear_slot>|<REG.DATE>|<weather_day_number_slot>|<weather_date_conflict_slot>|<REG.TIME>){time}(外边|<USER.PLACE>|<USER.city>[<USER.country>]|<USER.country>){geo})[的]
+[我][<weather_key>]<weather_can_action_aid_begin_common><weather_can_action_carwash>[<USER.nomean_end>]){Intent.get_carwash_idx};
+<rule_weather_1010011_1_weather> = ([([搜狗][<USER.nomean_begin>])|(([那|请][再][给我|帮我|替我][再]|[<USER.nomean_begin>])<weather_search_key_common>[下|一下])][我]
+((<REG.NUMBER>天内|<weather_date_unclear_slot>|<REG.DATE>|<weather_day_number_slot>|<weather_date_conflict_slot>|<REG.TIME>){time}[(外边|<USER.PLACE>|<USER.city>[<USER.country>]|<USER.country>){geo}]|
+[(<REG.NUMBER>天内|<weather_date_unclear_slot>|<REG.DATE>|<weather_day_number_slot>|<weather_date_conflict_slot>|<REG.TIME>){time}](外边|<USER.PLACE>|<USER.city>[<USER.country>]|<USER.country>){geo}|
+(<REG.NUMBER>天内|<weather_date_unclear_slot>|<REG.DATE>|<weather_day_number_slot>|<weather_date_conflict_slot>|<REG.TIME>){time}(外边|<USER.PLACE>|<USER.city>[<USER.country>]|<USER.country>){geo})[的]
+[我][<weather_key>]<weather_can_action_aid_begin_common><weather_can_action_weather>[<USER.nomean_end>]){Intent.get_weather};
+
+
+//什么时候有雨？会下雨吗？明天会不会下雨呀？清明节会不会下雨？今天广州会不会下雨？
+<rule_weather_1010010_0> = ([([搜狗][<USER.nomean_begin>])|(([那|请][再][给我|帮我|替我][再]|[<USER.nomean_begin>])<weather_search_key_common>[下|一下])]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}]
+[(<REG.NUMBER>天内|<weather_date_unclear_slot>|<REG.DATE>|<weather_day_number_slot>|<weather_date_conflict_slot>|<REG.TIME>){time}]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}][的]
+[<weather_key>]<weather_action_aid_begin_weather_common><weather_action>[<weather_action_aid_end_common>][<USER.nomean_end>]){Intent.get_weather};
+
+<rule_weather_1010010_0_fog> = ([([搜狗][<USER.nomean_begin>])|(([那|请][再][给我|帮我|替我][再]|[<USER.nomean_begin>])<weather_search_key_common>[下|一下])]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}]
+[(<REG.NUMBER>天内|<weather_date_unclear_slot>|<REG.DATE>|<weather_day_number_slot>|<weather_date_conflict_slot>|<REG.TIME>){time}]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}][的]
+[<weather_key>]<weather_action_aid_begin_other_common><weather_action_fog>[<weather_action_aid_end_common>][<USER.nomean_end>]){Intent.get_fog};
+<rule_weather_1010010_0_haze> = ([([搜狗][<USER.nomean_begin>])|(([那|请][再][给我|帮我|替我][再]|[<USER.nomean_begin>])<weather_search_key_common>[下|一下])]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}]
+[(<REG.NUMBER>天内|<weather_date_unclear_slot>|<REG.DATE>|<weather_day_number_slot>|<weather_date_conflict_slot>|<REG.TIME>){time}]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}][的]
+[<weather_key>]<weather_action_aid_begin_other_common><weather_action_haze>[<weather_action_aid_end_common>][<USER.nomean_end>]){Intent.get_haze};
+<rule_weather_1010010_0_rain> = ([([搜狗][<USER.nomean_begin>])|(([那|请][再][给我|帮我|替我][再]|[<USER.nomean_begin>])<weather_search_key_common>[下|一下])]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}]
+[(<REG.NUMBER>天内|<weather_date_unclear_slot>|<REG.DATE>|<weather_day_number_slot>|<weather_date_conflict_slot>|<REG.TIME>){time}]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}][的]
+[<weather_key>]<weather_action_aid_begin_other_common><weather_action_rain>[<weather_action_aid_end_common>][<USER.nomean_end>]){Intent.get_rain};
+<rule_weather_1010010_0_snow> = ([([搜狗][<USER.nomean_begin>])|(([那|请][再][给我|帮我|替我][再]|[<USER.nomean_begin>])<weather_search_key_common>[下|一下])]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}]
+[(<REG.NUMBER>天内|<weather_date_unclear_slot>|<REG.DATE>|<weather_day_number_slot>|<weather_date_conflict_slot>|<REG.TIME>){time}]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}][的]
+[<weather_key>]<weather_action_aid_begin_other_common><weather_action_snow>[<weather_action_aid_end_common>][<USER.nomean_end>]){Intent.get_snow};
+<rule_weather_1010010_0_temp> = ([([搜狗][<USER.nomean_begin>])|(([那|请][再][给我|帮我|替我][再]|[<USER.nomean_begin>])<weather_search_key_common>[下|一下])]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}]
+[(<REG.NUMBER>天内|<weather_date_unclear_slot>|<REG.DATE>|<weather_day_number_slot>|<weather_date_conflict_slot>|<REG.TIME>){time}]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}][的]
+[<weather_key>]<weather_action_aid_begin_other_common><weather_action_temp>[<weather_action_aid_end_common>][<USER.nomean_end>]){Intent.get_temperature};
+<rule_weather_1010010_0_weather> = ([([搜狗][<USER.nomean_begin>])|(([那|请][再][给我|帮我|替我][再]|[<USER.nomean_begin>])<weather_search_key_common>[下|一下])]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}]
+[(<REG.NUMBER>天内|<weather_date_unclear_slot>|<REG.DATE>|<weather_day_number_slot>|<weather_date_conflict_slot>|<REG.TIME>){time}]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}][的]
+[<weather_key>]<weather_action_aid_begin_other_common><weather_action_weather>[<weather_action_aid_end_common>][<USER.nomean_end>]){Intent.get_weather};
+<rule_weather_1010010_0_wind> = ([([搜狗][<USER.nomean_begin>])|(([那|请][再][给我|帮我|替我][再]|[<USER.nomean_begin>])<weather_search_key_common>[下|一下])]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}]
+[(<REG.NUMBER>天内|<weather_date_unclear_slot>|<REG.DATE>|<weather_day_number_slot>|<weather_date_conflict_slot>|<REG.TIME>){time}]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}][的]
+[<weather_key>]<weather_action_aid_begin_other_common><weather_action_wind>[<weather_action_aid_end_common>][<USER.nomean_end>]){Intent.get_wind};
+
+//下雨吗？有太阳吗？这几天有雨吗？沧州今天有雨吗？
+<rule_weather_1010010_1_fog> = ([([搜狗][<USER.nomean_begin>])|(([那|请][再][给我|帮我|替我][再]|[<USER.nomean_begin>])<weather_search_key_common>[下|一下])]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}]
+[(<REG.NUMBER>天内|<weather_date_unclear_slot>|<REG.DATE>|<weather_day_number_slot>|<weather_date_conflict_slot>|<REG.TIME>){time}]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}][的]
+[<weather_key>]<weather_action_fog><weather_action_aid_end_common>[<USER.nomean_end>]){Intent.get_fog};
+<rule_weather_1010010_1_haze> = ([([搜狗][<USER.nomean_begin>])|(([那|请][再][给我|帮我|替我][再]|[<USER.nomean_begin>])<weather_search_key_common>[下|一下])]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}]
+[(<REG.NUMBER>天内|<weather_date_unclear_slot>|<REG.DATE>|<weather_day_number_slot>|<weather_date_conflict_slot>|<REG.TIME>){time}]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}][的]
+[<weather_key>]<weather_action_haze><weather_action_aid_end_common>[<USER.nomean_end>]){Intent.get_haze};
+<rule_weather_1010010_1_rain> = ([([搜狗][<USER.nomean_begin>])|(([那|请][再][给我|帮我|替我][再]|[<USER.nomean_begin>])<weather_search_key_common>[下|一下])]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}]
+[(<REG.NUMBER>天内|<weather_date_unclear_slot>|<REG.DATE>|<weather_day_number_slot>|<weather_date_conflict_slot>|<REG.TIME>){time}]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}][的]
+[<weather_key>]<weather_action_rain><weather_action_aid_end_common>[<USER.nomean_end>]){Intent.get_rain};
+<rule_weather_1010010_1_snow> = ([([搜狗][<USER.nomean_begin>])|(([那|请][再][给我|帮我|替我][再]|[<USER.nomean_begin>])<weather_search_key_common>[下|一下])]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}]
+[(<REG.NUMBER>天内|<weather_date_unclear_slot>|<REG.DATE>|<weather_day_number_slot>|<weather_date_conflict_slot>|<REG.TIME>|<REG.DATE><REG.TIME>){time}]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}][的]
+[<weather_key>]<weather_action_snow><weather_action_aid_end_common>[<USER.nomean_end>]){Intent.get_snow};
+<rule_weather_1010010_1_temp> = ([([搜狗][<USER.nomean_begin>])|(([那|请][再][给我|帮我|替我][再]|[<USER.nomean_begin>])<weather_search_key_common>[下|一下])]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}]
+[(<REG.NUMBER>天内|<weather_date_unclear_slot>|<REG.DATE>|<weather_day_number_slot>|<weather_date_conflict_slot>|<REG.TIME>){time}]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}][的]
+[<weather_key>]<weather_action_temp><weather_action_aid_end_common>[<USER.nomean_end>]){Intent.get_temperature};
+<rule_weather_1010010_1_weather> = ([([搜狗][<USER.nomean_begin>])|(([那|请][再][给我|帮我|替我][再]|[<USER.nomean_begin>])<weather_search_key_common>[下|一下])]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}]
+[(<REG.NUMBER>天内|<weather_date_unclear_slot>|<REG.DATE>|<weather_day_number_slot>|<weather_date_conflict_slot>|<REG.TIME>){time}]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}][的]
+[<weather_key>]<weather_action_weather><weather_action_aid_end_common>[<USER.nomean_end>]){Intent.get_weather};
+<rule_weather_1010010_1_wind> = ([([搜狗][<USER.nomean_begin>])|(([那|请][再][给我|帮我|替我][再]|[<USER.nomean_begin>])<weather_search_key_common>[下|一下])]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}]
+[(<REG.NUMBER>天内|<weather_date_unclear_slot>|<REG.DATE>|<weather_day_number_slot>|<weather_date_conflict_slot>|<REG.TIME>){time}]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}][的]
+[<weather_key>]<weather_action_wind><weather_action_aid_end_common>[<USER.nomean_end>]){Intent.get_wind};
+
+//有没有暴雪？会不会有大风？今天有雾霾吗？明天北京下雨吗？明天会下雨吗？
+<rule_weather_1010010_2> = ([([搜狗][<USER.nomean_begin>])|(([那|请][再][给我|帮我|替我][再]|[<USER.nomean_begin>])<weather_search_key_common>[下|一下])]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}]
+[(<REG.NUMBER>天内|<weather_date_unclear_slot>|<REG.DATE>|<weather_day_number_slot>|<weather_date_conflict_slot>|<REG.TIME>){time}]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}][的]
+[<weather_key>]<weather_noun_aid_begin_weather_common><weather_noun>[<USER.nomean_end>]){Intent.get_weather};
+<rule_weather_1010010_2_fog> = ([([搜狗][<USER.nomean_begin>])|(([那|请][再][给我|帮我|替我][再]|[<USER.nomean_begin>])<weather_search_key_common>[下|一下])]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}]
+[(<REG.NUMBER>天内|<weather_date_unclear_slot>|<REG.DATE>|<weather_day_number_slot>|<weather_date_conflict_slot>|<REG.TIME>){time}]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}][的]
+[<weather_key>]<weather_noun_aid_begin_other_common><weather_noun_fog>[<USER.nomean_end>]){Intent.get_fog};
+<rule_weather_1010010_2_hail> = ([([搜狗][<USER.nomean_begin>])|(([那|请][再][给我|帮我|替我][再]|[<USER.nomean_begin>])<weather_search_key_common>[下|一下])]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}]
+[(<REG.NUMBER>天内|<weather_date_unclear_slot>|<REG.DATE>|<weather_day_number_slot>|<weather_date_conflict_slot>|<REG.TIME>){time}]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}][的]
+[<weather_key>]<weather_noun_aid_begin_other_common><weather_noun_hail>[<USER.nomean_end>]){Intent.get_hail};
+<rule_weather_1010010_2_haze> = ([([搜狗][<USER.nomean_begin>])|(([那|请][再][给我|帮我|替我][再]|[<USER.nomean_begin>])<weather_search_key_common>[下|一下])]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}]
+[(<REG.NUMBER>天内|<weather_date_unclear_slot>|<REG.DATE>|<weather_day_number_slot>|<weather_date_conflict_slot>|<REG.TIME>){time}]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}][的]
+[<weather_key>]<weather_noun_aid_begin_other_common><weather_noun_haze>[<USER.nomean_end>]){Intent.get_haze};
+<rule_weather_1010010_2_rain> = ([([搜狗][<USER.nomean_begin>])|(([那|请][再][给我|帮我|替我][再]|[<USER.nomean_begin>])<weather_search_key_common>[下|一下])]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}]
+[(<REG.NUMBER>天内|<weather_date_unclear_slot>|<REG.DATE>|<weather_day_number_slot>|<weather_date_conflict_slot>|<REG.TIME>){time}]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}][的]
+[<weather_key>]<weather_noun_aid_begin_other_common><weather_noun_rain>[<USER.nomean_end>]){Intent.get_rain};
+<rule_weather_1010010_2_snow> = ([([搜狗][<USER.nomean_begin>])|(([那|请][再][给我|帮我|替我][再]|[<USER.nomean_begin>])<weather_search_key_common>[下|一下])]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}]
+[(<REG.NUMBER>天内|<weather_date_unclear_slot>|<REG.DATE>|<weather_day_number_slot>|<weather_date_conflict_slot>|<REG.TIME>){time}]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}][的]
+[<weather_key>]<weather_noun_aid_begin_other_common><weather_noun_snow>[<USER.nomean_end>]){Intent.get_snow};
+<rule_weather_1010010_2_weather> = ([([搜狗][<USER.nomean_begin>])|(([那|请][再][给我|帮我|替我][再]|[<USER.nomean_begin>])<weather_search_key_common>[下|一下])]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}]
+[(<REG.NUMBER>天内|<weather_date_unclear_slot>|<REG.DATE>|<weather_day_number_slot>|<weather_date_conflict_slot>|<REG.TIME>){time}]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}][的]
+[<weather_key>]<weather_noun_aid_begin_other_common><weather_noun_weather>[<USER.nomean_end>]){Intent.get_weather};
+<rule_weather_1010010_2_wind> = ([([搜狗][<USER.nomean_begin>])|(([那|请][再][给我|帮我|替我][再]|[<USER.nomean_begin>])<weather_search_key_common>[下|一下])]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}]
+[(<REG.NUMBER>天内|<weather_date_unclear_slot>|<REG.DATE>|<weather_day_number_slot>|<weather_date_conflict_slot>|<REG.TIME>){time}]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}][的]
+[<weather_key>]<weather_noun_aid_begin_other_common><weather_noun_wind>[<USER.nomean_end>]){Intent.get_wind};
+
+
+//沙尘暴大吗？雾霾是大是小？
+<rule_weather_1010010_3_fog> = ([([搜狗][<USER.nomean_begin>])|(([那|请][再][给我|帮我|替我][再]|[<USER.nomean_begin>])<weather_search_key_common>[下|一下])]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}]
+[(<REG.NUMBER>天内|<weather_date_unclear_slot>|<REG.DATE>|<weather_day_number_slot>|<weather_date_conflict_slot>|<REG.TIME>){time}]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}][的]
+<weather_noun_fog><weather_noun_aid_end_common>[<USER.nomean_end>]){Intent.get_fog};
+<rule_weather_1010010_3_hail> = ([([搜狗][<USER.nomean_begin>])|(([那|请][再][给我|帮我|替我][再]|[<USER.nomean_begin>])<weather_search_key_common>[下|一下])]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}]
+[(<REG.NUMBER>天内|<weather_date_unclear_slot>|<REG.DATE>|<weather_day_number_slot>|<weather_date_conflict_slot>|<REG.TIME>){time}]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}][的]
+<weather_noun_hail><weather_noun_aid_end_common>[<USER.nomean_end>]){Intent.get_hail};
+<rule_weather_1010010_3_haze> = ([([搜狗][<USER.nomean_begin>])|(([那|请][再][给我|帮我|替我][再]|[<USER.nomean_begin>])<weather_search_key_common>[下|一下])]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}]
+[(<REG.NUMBER>天内|<weather_date_unclear_slot>|<REG.DATE>|<weather_day_number_slot>|<weather_date_conflict_slot>|<REG.TIME>){time}]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}][的]
+<weather_noun_haze><weather_noun_aid_end_common>[<USER.nomean_end>]){Intent.get_haze};
+<rule_weather_1010010_3_rain> = ([([搜狗][<USER.nomean_begin>])|(([那|请][再][给我|帮我|替我][再]|[<USER.nomean_begin>])<weather_search_key_common>[下|一下])]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}]
+[(<REG.NUMBER>天内|<weather_date_unclear_slot>|<REG.DATE>|<weather_day_number_slot>|<weather_date_conflict_slot>|<REG.TIME>){time}]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}][的]
+<weather_noun_rain><weather_noun_aid_end_common>[<USER.nomean_end>]){Intent.get_rain};
+<rule_weather_1010010_3_snow> = ([([搜狗][<USER.nomean_begin>])|(([那|请][再][给我|帮我|替我][再]|[<USER.nomean_begin>])<weather_search_key_common>[下|一下])]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}]
+[(<REG.NUMBER>天内|<weather_date_unclear_slot>|<REG.DATE>|<weather_day_number_slot>|<weather_date_conflict_slot>|<REG.TIME>){time}]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}][的]
+<weather_noun_snow><weather_noun_aid_end_common>[<USER.nomean_end>]){Intent.get_snow};
+<rule_weather_1010010_3_weather> = ([([搜狗][<USER.nomean_begin>])|(([那|请][再][给我|帮我|替我][再]|[<USER.nomean_begin>])<weather_search_key_common>[下|一下])]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}]
+[(<REG.NUMBER>天内|<weather_date_unclear_slot>|<REG.DATE>|<weather_day_number_slot>|<weather_date_conflict_slot>|<REG.TIME>){time}]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}][的]
+<weather_noun_weather><weather_noun_aid_end_common>[<USER.nomean_end>]){Intent.get_weather};
+<rule_weather_1010010_3_wind> = ([([搜狗][<USER.nomean_begin>])|(([那|请][再][给我|帮我|替我][再]|[<USER.nomean_begin>])<weather_search_key_common>[下|一下])]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}]
+[(<REG.NUMBER>天内|<weather_date_unclear_slot>|<REG.DATE>|<weather_day_number_slot>|<weather_date_conflict_slot>|<REG.TIME>){time}]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}][的]
+<weather_noun_wind><weather_noun_aid_end_common>[<USER.nomean_end>]){Intent.get_wind};
+
+//天气预报，今天天气怎么样？铜川天气怎么样？杭州今天天气怎么样？
+<rule_weather_1010010_4_carwash> = ([([搜狗][<USER.nomean_begin>])|(([那|请][再][给我|帮我|替我][再]|[<USER.nomean_begin>])<weather_search_key_common>[下|一下])]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}]
+[(<REG.NUMBER>天内|<weather_date_unclear_slot>|<REG.DATE>|<weather_day_number_slot>|<weather_date_conflict_slot>|<REG.TIME>){time}]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}][的]
+[<weather_key_aid_begin_common>]<weather_key_carwash>[<weather_key_aid_end_common>][<USER.nomean_end>]){Intent.get_carwash_idx};
+<rule_weather_1010010_4_dress> = ([([搜狗][<USER.nomean_begin>])|(([那|请][再][给我|帮我|替我][再]|[<USER.nomean_begin>])<weather_search_key_common>[下|一下])]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}]
+[(<REG.NUMBER>天内|<weather_date_unclear_slot>|<REG.DATE>|<weather_day_number_slot>|<weather_date_conflict_slot>|<REG.TIME>){time}]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}][的]
+[<weather_key_aid_begin_common>]<weather_key_dress>[<weather_key_aid_end_common>][<USER.nomean_end>]){Intent.get_dressing_idx};
+<rule_weather_1010010_4_haze> = ([([搜狗][<USER.nomean_begin>])|(([那|请][再][给我|帮我|替我][再]|[<USER.nomean_begin>])<weather_search_key_common>[下|一下])]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}]
+[(<REG.NUMBER>天内|<weather_date_unclear_slot>|<REG.DATE>|<weather_day_number_slot>|<weather_date_conflict_slot>|<REG.TIME>){time}]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}][的]
+[<weather_key_aid_begin_common>]<weather_key_haze>[<weather_key_aid_end_common>][<USER.nomean_end>]){Intent.get_haze};
+<rule_weather_1010010_4_humidity> = ([([搜狗][<USER.nomean_begin>])|(([那|请][再][给我|帮我|替我][再]|[<USER.nomean_begin>])<weather_search_key_common>[下|一下])]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}]
+[(<REG.NUMBER>天内|<weather_date_unclear_slot>|<REG.DATE>|<weather_day_number_slot>|<weather_date_conflict_slot>|<REG.TIME>){time}]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}][的]
+[<weather_key_aid_begin_common>]<weather_key_humidity>[<weather_key_aid_end_common>][<USER.nomean_end>]){Intent.get_humidity};
+<rule_weather_1010010_4_rain> = ([([搜狗][<USER.nomean_begin>])|(([那|请][再][给我|帮我|替我][再]|[<USER.nomean_begin>])<weather_search_key_common>[下|一下])]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}]
+[(<REG.NUMBER>天内|<weather_date_unclear_slot>|<REG.DATE>|<weather_day_number_slot>|<weather_date_conflict_slot>|<REG.TIME>){time}]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}][的]
+[<weather_key_aid_begin_common>]<weather_key_rain>[<weather_key_aid_end_common>][<USER.nomean_end>]){Intent.get_rain};
+<rule_weather_1010010_4_temp> = ([([搜狗][<USER.nomean_begin>])|(([那|请][再][给我|帮我|替我][再]|[<USER.nomean_begin>])<weather_search_key_common>[下|一下])]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}]
+[(<REG.NUMBER>天内|<weather_date_unclear_slot>|<REG.DATE>|<weather_day_number_slot>|<weather_date_conflict_slot>|<REG.TIME>){time}]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}][的]
+[<weather_key>][<weather_key_aid_begin_common>]<weather_key_temp>[是|有][<weather_key_aid_end_common>][<USER.nomean_end>]){Intent.get_temperature};
+<rule_weather_1010010_4_uv> = ([([搜狗][<USER.nomean_begin>])|(([那|请][再][给我|帮我|替我][再]|[<USER.nomean_begin>])<weather_search_key_common>[下|一下])]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}]
+[(<REG.NUMBER>天内|<weather_date_unclear_slot>|<REG.DATE>|<weather_day_number_slot>|<weather_date_conflict_slot>|<REG.TIME>){time}]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}][的]
+[<weather_key_aid_begin_common>]<weather_key_uv>[<weather_key_aid_end_common>][<USER.nomean_end>]){Intent.get_uv};
+<rule_weather_1010010_4_weather> = ([([搜狗][<USER.nomean_begin>])|(([那|请][再][给我|帮我|替我][再]|[<USER.nomean_begin>])<weather_search_key_common>[下|一下])]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}]
+[(<REG.NUMBER>天内|<weather_date_unclear_slot>|<REG.DATE>|<weather_day_number_slot>|<weather_date_conflict_slot>|<REG.TIME>){time}]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}][的]
+[<weather_key_aid_begin_common>]<weather_key_weather>[<weather_key_aid_end_common>][<USER.nomean_end>]){Intent.get_weather};
+<rule_weather_1010010_4_wind> = ([([搜狗][<USER.nomean_begin>])|(([那|请][再][给我|帮我|替我][再]|[<USER.nomean_begin>])<weather_search_key_common>[下|一下])]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}]
+[(<REG.NUMBER>天内|<weather_date_unclear_slot>|<REG.DATE>|<weather_day_number_slot>|<weather_date_conflict_slot>|<REG.TIME>){time}]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}][的]
+[<weather_key_aid_begin_common>]<weather_key_wind>[<weather_key_aid_end_common>][<USER.nomean_end>]){Intent.get_wind};
+
+//穿什么衣服？今天的天气适合穿什么衣服？今天应该穿什么衣服？今天穿什么衣服？
+<rule_weather_1010010_5> = ([([搜狗][<USER.nomean_begin>])|(([那|请][再][给我|帮我|替我][再]|[<USER.nomean_begin>])<weather_search_key_common>[下|一下])]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}]
+[(<REG.NUMBER>天内|<weather_date_unclear_slot>|<REG.DATE>|<weather_day_number_slot>|<weather_date_conflict_slot>|<REG.TIME>){time}]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}][的][天气][适合|应该|该|要]
+<weather_clothes_aid_begin_common><weather_clothes>[<USER.nomean_end>]){Intent.get_dressing_idx};
+
+//要不要带伞？广州明天出门要带雨伞吗？我需要带伞吗？明天出门要带伞吗？
+<rule_weather_1010010_6_weather> = ([([搜狗][<USER.nomean_begin>])|(([那|请][再][给我|帮我|替我][再]|[<USER.nomean_begin>])<weather_search_key_common>[下|一下])][我]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}]
+[(<REG.NUMBER>天内|<weather_date_unclear_slot>|<REG.DATE>|<weather_day_number_slot>|<weather_date_conflict_slot>|<REG.TIME>){time}]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}]
+[我][出门]<weather_clothes_aid_begin_common><weather_umbrella_other>[<USER.nomean_end>]){Intent.get_weather};
+<rule_weather_1010010_6_rain> = ([([搜狗][<USER.nomean_begin>])|(([那|请][再][给我|帮我|替我][再]|[<USER.nomean_begin>])<weather_search_key_common>[下|一下])][我]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}]
+[(<REG.NUMBER>天内|<weather_date_unclear_slot>|<REG.DATE>|<weather_day_number_slot>|<weather_date_conflict_slot>|<REG.TIME>){time}]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}]
+[我][出门]<weather_clothes_aid_begin_common><weather_umbrella_rain>[<USER.nomean_end>]){Intent.get_rain};
+<rule_weather_1010010_6_uv> = ([([搜狗][<USER.nomean_begin>])|(([那|请][再][给我|帮我|替我][再]|[<USER.nomean_begin>])<weather_search_key_common>[下|一下])][我]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}]
+[(<REG.NUMBER>天内|<weather_date_unclear_slot>|<REG.DATE>|<weather_day_number_slot>|<weather_date_conflict_slot>|<REG.TIME>){time}]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}]
+[我][出门]<weather_clothes_aid_begin_common><weather_umbrella_uv>[<USER.nomean_end>]){Intent.get_uv};
+
+//风力几级？明天有几度？现在温度多少度？上海什么天气？今天的天气多少度？
+<rule_weather_1010010_7_temp> = ([([搜狗][<USER.nomean_begin>])|(([那|请][再][给我|帮我|替我][再]|[<USER.nomean_begin>])<weather_search_key_common>[下|一下])]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}]
+[(<REG.NUMBER>天内|<weather_date_unclear_slot>|<REG.DATE>|<weather_day_number_slot>|<weather_date_conflict_slot>|<REG.TIME>){time}]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}][的]
+[<weather_key>][是|有]<weather_keyword_special_temp>[<USER.nomean_end>]){Intent.get_temperature};
+<rule_weather_1010010_7_weather> = ([([搜狗][<USER.nomean_begin>])|(([那|请][再][给我|帮我|替我][再]|[<USER.nomean_begin>])<weather_search_key_common>[下|一下])]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}]
+[(<REG.NUMBER>天内|<weather_date_unclear_slot>|<REG.DATE>|<weather_day_number_slot>|<weather_date_conflict_slot>|<REG.TIME>){time}]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}][的]
+[<weather_key>][是|有]<weather_keyword_special_weather>[<USER.nomean_end>]){Intent.get_weather};
+<rule_weather_1010010_7_wind> = ([([搜狗][<USER.nomean_begin>])|((([那|请][再][给我|帮我|替我][再]|[<USER.nomean_begin>])|[<USER.nomean_begin>])<weather_search_key_common>[下|一下])]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}]
+[(<REG.NUMBER>天内|<weather_date_unclear_slot>|<REG.DATE>|<weather_day_number_slot>|<weather_date_conflict_slot>|<REG.TIME>){time}]
+[(外边|<USER.PLACE>|<weather_place_supplement_slot>|<USER.city>[<USER.country>]|<USER.country>){geo}][的]
+[<weather_key>][是|有]<weather_keyword_special_wind>[<USER.nomean_end>]){Intent.get_wind};
+
+
+//dict
+<weather_search_key_common> = 查|查查|搜|搜搜|搜索|找|找找|查询|查一查|查看|看看|看;
+<weather_day_number_slot> = 后天上午|后天下午|今|今天上午|今天下午|明|明天上午|明天下午|上午|下午|现在;
+<weather_adj_aid_begin_common> = 非常|很|会不会非常|会不会很|会不会相当|是否非常|是否很|是否会非常|是否会很|是否会相当|是否相当|相当;
+//<weather_adj> = 潮湿|非常晒|寒冷|很晒|冷|冷不冷|凉快|凉爽|闷|闷热|热|热不热|晒|晒不晒|湿热|炎热;
+<weather_adj_humidity> = 潮湿;
+<weather_adj_temp> = 寒冷|冷|冷不冷|凉快|凉爽|热|热不热|湿热|炎热;
+<weather_adj_weather> = 闷|闷热;
+<weather_adj_uv> = 非常晒|很晒|晒|晒不晒;
+<weather_adj_aid_end_common> = 吧|哈|嘛|吗|么|撒;
+
+//<weather_action_aid_begin> = 多久|多久才会|多久才能|多久会|多久可能|多久能|何时|何时才会|何时才能|何时会|何时可能|何时能|会|会不会|可能|哪天|哪天才会|哪天才能|哪天会|哪天可能|哪天能|能|什么时候|什么时候才会|什么时候才能|
+//什么时候会|什么时候可能|什么时候能|什么时间|什么时间才会|什么时间才能|什么时间会|什么时间可能|什么时间能|是不是|是否|是否会|天会;
+<weather_action_aid_begin_weather_common> = 多久|多久才会|多久才能|多久会|多久可能|多久能|何时|何时才会|何时才能|何时会|何时可能|何时能|哪天|哪天才会|哪天才能|
+哪天会|哪天可能|哪天能|什么时候|什么时候才会|什么时候才能|什么时候会|什么时候可能|什么时候能|什么时间|什么时间才会|什么时间才能|什么时间会|什么时间可能|什么时间能;
+<weather_action_aid_begin_other_common> = 会|会不会|可能|能|是不是|是否|是否会|天会;
+<weather_action_aid_end_common> = 吧|哈|嘛|吗|么|撒;
+<weather_action> = 出太阳|打雷|大风扬沙|大幅降温|大幅升温|大晴天|电闪雷鸣|放晴|刮大风|刮风|刮狂风|刮台风|降温|结冰|起雾|气温|晴|晴朗|晴天|沙尘天|上冻|上雾|升温|温度|下暴雨|下大暴雨|下大雨|下雪|下雨|小幅降温|小幅升温|
+雪|扬沙|有太阳|有雾|有雾霾|有雪|有雨|雨天|转凉|转晴|转阴;
+<weather_action_weather> = 出太阳|大晴天|放晴|晴|晴朗|晴天|有太阳|转晴|转阴;
+<weather_action_wind> = 大风扬沙|刮大风|刮风|刮狂风|刮台风;
+<weather_action_rain> = 打雷|电闪雷鸣|下暴雨|下大暴雨|下大雨|下雨|有雨|雨天;
+<weather_action_temp> = 大幅降温|大幅升温|降温|结冰|气温|上冻|升温|温度|小幅降温|小幅升温|转凉;
+<weather_action_fog> = 起雾|上雾|有雾;
+<weather_action_haze> = 沙尘天|扬沙|有雾霾;
+<weather_action_snow> = 下雪|雪|有雪;
+
+<weather_context_nomeanend_common> = 的|的啊|的阿|的呐|的呢|的呀|的丫|刮不刮啊|刮不刮阿|刮不刮呀|刮不刮丫|刮嘛|刮吗|刮么|呐|呢|如何|如何啊|如何阿|如何呐|如何呢|如何呀|如何丫|下不下啊|下不下阿|下不下呀|下不下丫|下嘛|下吗|下么|有嘛|有吗|有么|
+有没有啊|有没有阿|有没有呀|有没有丫|怎么样|怎么样啊|怎么样阿|怎么样呐|怎么样呢|怎么样呀|怎么样丫|咋样|咋样啊|咋样阿|咋样呐|咋样呢|咋样呀|咋样丫;
+<weather_date_unclear_slot> = 二天|接下来几天|近1天|近2天|近3天|近4天|近5天|近6天|近7天|近8天|近9天|近二天|近几天|近来|近两天|近两周|
+近六天|近七天|近三天|近三周|近四天|近五天|近一天|近一周|两天|六天|目前|七天|三天|四天|未来|未来1天|
+未来2天|未来3天|未来4天|未来5天|未来6天|未来7天|未来8天|未来9天|未来二天|未来几天|未来两天|未来两周|
+未来六天|未来七天|未来三天|未来三周|未来四天|未来五天|未来一天|未来一周|五天|一天|一周|这1天|这2天|这3天|
+这4天|这5天|这6天|这7天|这8天|这9天|这二天|这几天|这两天|这两周|这六天|这七天|这三天|这三周|这四天|
+这五天|这些天|这一天|这一周|最近|最近1天|最近2天|最近3天|最近4天|最近5天|最近6天|最近7天|最近8天|最近9天|
+最近二天|最近几天|最近两天|最近两周|最近六天|最近七天|最近三天|最近三周|最近四天|最近五天|最近一天|最近一周;
+<weather_date_conflict_slot> = 本半星期|本半周|本星期|本一星期|本一周|本周|下半星期|下半周|下星期|下一星期|下一周|下周|这半星期|这半周|这星期|这一星期|这一周|这周;
+<weather_place_supplement_slot> = 西沙群岛;
+
+<weather_can_action_aid_begin_common> = 可以|可以去|能|能够|能够去|适合|适合去|需要;
+//<weather_can_action> = 打伞|带伞|郊游|晾衣服|旅游|爬山|晒被子|晒衣服|洗车;
+<weather_can_action_carwash> = 洗车;
+<weather_can_action_weather> = 打伞|带伞|郊游|晾衣服|旅游|爬山|晒被子|晒衣服;
+
+//<weather_noun_aid_begin> = 不会|不会有|刮|刮不刮|会|会不会|会不会刮|会不会降|会不会下|会不会有|会降|会下|哪天刮|哪天会刮|哪天会下|哪天下|是|是有|下|下不下|有|有降|有没有|有没有降|有没有下|有下;
+<weather_noun_aid_begin_weather_common> = 哪天刮|哪天会刮|哪天会下|哪天下;
+<weather_noun_aid_begin_other_common> = 不会|不会有|刮|刮不刮|会|会不会|会不会刮|会不会降|会不会下|会不会有|会降|会下|是|是有|下|下不下|有|有降|有没有|有没有降|有没有下|有下;
+//<weather_noun> = NO2|NO2浓度|No2|No2浓度|SO2|SO2浓度|So2|So2浓度|no2|no2浓度|pm2.5指数|so2|so2浓度|暴雪|暴雨|北风|冰|冰雹|大暴雪|大暴雨|大风|大雪|大雨|电闪雷鸣|东北风|东风|东南风|风|风力|狂风|雷电|雷雨|雷阵雨|龙卷风|毛毛雨|南风|
+//晴天|沙尘|沙尘暴|沙尘天|闪雷|台风|雾|雾霾|西北风|西风|西南风|细小颗粒物|细雨|小雪|小雨|雪|阴天|雨|雨夹雪|雨天|阵风|阵雨|中雪|中雨|霾;
+<weather_noun_wind> = 北风|大风|东北风|东风|东南风|风|风力|狂风|龙卷风|南风|台风|西北风|西风|西南风|阵风;
+<weather_noun_haze> = NO2|NO2浓度|No2|No2浓度|SO2|SO2浓度|So2|So2浓度|no2|no2浓度|pm2.5指数|so2|so2浓度|沙尘|沙尘暴|沙尘天|雾霾|细小颗粒物|霾;
+<weather_noun_snow> = 暴雪|大暴雪|大雪|小雪|雪|中雪;
+<weather_noun_rain> = 暴雨|大暴雨|大雨|电闪雷鸣|雷电|雷雨|雷阵雨|毛毛雨|闪雷|细雨|小雨|雨|雨夹雪|雨天|阵雨|中雨;
+<weather_noun_hail> = 冰|冰雹;
+<weather_noun_weather> = 晴天|阴天;
+<weather_noun_fog> = 雾;
+<weather_noun_aid_end_common> = 大吗|大么|高吗|吗|啥时候|啥时候来|啥时候下|什么时候|什么时候来|什么时候下|是大是小|小吗|小么|有多大;
+//<weather_noun_aid_end_weather> = 啥时候|啥时候来|啥时候下|什么时候|什么时候来|什么时候下;
+//<weather_noun_aid_end_other> = 大吗|大么|高吗|吗|是大是小|小吗|小么|有多大;
+
+<weather_key_aid_begin_common> = 平均|啥|神马|什么|实时|收听|怎么|最大|最低|最高|最小;
+<weather_key> = NO2|NO2浓度|PM2.5|PM2.5指数|SO2|SO2浓度|出行指数|穿衣指数|二氧化氮|二氧化氮浓度|二氧化硫|二氧化硫浓度|风力|感冒指数|光照强度|降水|郊游指数|今天气|空气湿度|空气污染指数|空气质量|空气质量指数|旅游指数|气温|湿度|
+天儿|天气|天气情况|天气情况走势|天气日报|天气预报|天气预告|天气质量|温差|温度|雾霾|洗车指数|细小颗粒物|细小颗粒物浓度|紫外线照射|紫外线指数|霾;
+<weather_key_haze> = NO2|NO2浓度|PM2.5|PM2.5指数|SO2|SO2浓度|二氧化氮|二氧化氮浓度|二氧化硫|二氧化硫浓度|空气污染指数|空气质量|空气质量指数|雾霾|霾;
+<weather_key_weather> = 出行指数|感冒指数|郊游指数|今天气|旅游指数|天儿|天气|天气情况|天气情况走势|天气日报|天气预报|天气预告|天气质量|细小颗粒物|细小颗粒物浓度|天气状况|天气报告;
+<weather_key_dress> = 穿衣指数;
+<weather_key_wind> = 风力;
+<weather_key_uv> = 光照强度|紫外线照射|紫外线指数;
+<weather_key_rain> = 降水;
+<weather_key_humidity> = 空气湿度|湿度;
+<weather_key_temp> = 气温|温差|温度;
+<weather_key_carwash> = 洗车指数;
+<weather_key_aid_end_common> = 低|都很低|都很高|多低|多底|多高|多少|多少度|非常低|非常高|高|很低|很高|还会降|还会升|还能降|还能升|继续降|继续升|如何|是神马|是什么|是怎么样|是怎样|太低|太高|相当低|相当高|有点低|有点高|有多高|有多少|则么样|怎么|怎么样|怎样|咋样|这么样|这模样|肿么样;
+<weather_clothes_aid_begin_common> = 必须|必须穿|必须带|必须拿|穿|穿什么|带|该不该|该不该穿|该不该带|该不该拿|可以|可以穿|可以带|可以拿|拿|适合|适合穿|需要|需要穿|需要带|需要拿|要|要不要|要不要穿|要不要带|要不要拿|要穿|要带|要拿|应该|应该穿|应该带|应该拿|用|用不用|用不用穿|用不用带|用不用拿|用穿|用带|用得着|用得着穿|用得着带|用得着拿|用拿;
+<weather_clothes> = 保暖内衣|穿厚点|带把伞|多穿点|风衣|厚衣服|加衣服|毛裤|毛衣|帽子|衣服|羽绒服;
+//<weather_umbrella> = 带把伞|伞|太阳伞|雨伞|雨衣;
+<weather_umbrella_rain> = 雨伞|雨衣;
+<weather_umbrella_uv> = 太阳伞;
+<weather_umbrella_other> = 带把伞|伞;
+//<weather_keyword_special> = 多少°|多少度|多少华氏度|多少级风|多少摄氏度|风多大|风几级|风力多少级|风力几级|风力什么级|风力是多少级|风力是几级|风力是什么级|风量多少级|风量几级|风量什么级|风量是多少级|风量是几级|风量是什么级|会感冒|几°|几度|几华氏度|几级风|几摄氏度|容易感冒|神马天|什么级风|什么天|天儿好不|天儿好不好|天好不|天好不好|问天气|这天气|什么天气;
+<weather_keyword_special_temp> = 多少°|多少度|多少华氏度|几°|几度|几华氏度|几摄氏度;
+<weather_keyword_special_wind> = 风多大|风几级|风力多少级|风力几级|风力什么级|风力是多少级|风力是几级|风力是什么级|风量多少级|风量几级|风量什么级|风量是多少级|风量是几级|风量是什么级|几级风|什么级风;
+<weather_keyword_special_weather> = 会感冒|容易感冒|神马天|什么天|天儿好不|天儿好不好|天好不|天好不好|问天气|这天气|什么天气;

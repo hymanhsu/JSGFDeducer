@@ -1,0 +1,126 @@
+#JSGF V1.0 UTF-8;
+grammar system_settings;
+import <fuzzy.*>;
+import <number.*>;
+import <date.*>;
+
+public <main> = (
+<rule_system_settings_open_vehicle_0>|
+<rule_system_settings_open_vehicle_1>|
+<rule_system_settings_close_vehicle_0>|
+<rule_system_settings_close_vehicle_1>|
+<rule_system_settings_open_gprs_0>|
+<rule_system_settings_open_gprs_1>|
+<rule_system_settings_close_gprs_0>|
+<rule_system_settings_close_gprs_1>|
+<rule_system_settings_open_2g_0>|
+<rule_system_settings_open_2g_1>|
+<rule_system_settings_close_2g_0>|
+<rule_system_settings_close_2g_1>
+){Domain.system_settings};
+
+//打开驾驶模式
+<rule_system_settings_open_vehicle_0> = ([<USER.nomean_begin>][<SYSTEM_SETTINGS_OPEN>][<SYSTEM_SETTINGS_YIXIA>][<SYSTEM_SETTINGS_MY>](<SYSTEM_SETTINGS_VEHICLE>[<SYSTEM_SETTINGS_FUNCTION>]){mode}[<SYSTEM_SETTINGS_YIXIA>][<USER.nomean_end>]){Intent.vehicle_on};
+<rule_system_settings_open_vehicle_1> = ([<USER.nomean_begin>][把|将][<SYSTEM_SETTINGS_MY>](<SYSTEM_SETTINGS_VEHICLE>[<SYSTEM_SETTINGS_FUNCTION>]){mode}[<SYSTEM_SETTINGS_OPEN>][<SYSTEM_SETTINGS_YIXIA>][<USER.nomean_end>]){Intent.vehicle_on};
+//关闭驾驶模式
+<rule_system_settings_close_vehicle_0> = ([<USER.nomean_begin>]<SYSTEM_SETTINGS_CLOSE>[<SYSTEM_SETTINGS_YIXIA>][<SYSTEM_SETTINGS_MY>](<SYSTEM_SETTINGS_VEHICLE>[<SYSTEM_SETTINGS_FUNCTION>]){mode}[<SYSTEM_SETTINGS_YIXIA>][<USER.nomean_end>]){Intent.vehicle_off};
+<rule_system_settings_close_vehicle_1> = ([<USER.nomean_begin>][把|将][<SYSTEM_SETTINGS_MY>](<SYSTEM_SETTINGS_VEHICLE>[<SYSTEM_SETTINGS_FUNCTION>]){mode}<SYSTEM_SETTINGS_CLOSE>[<SYSTEM_SETTINGS_YIXIA>][<USER.nomean_end>]){Intent.vehicle_off};
+
+//打开GPRS
+<rule_system_settings_open_gprs_0> = ([<USER.nomean_begin>][<SYSTEM_SETTINGS_OPEN>][<SYSTEM_SETTINGS_YIXIA>][<SYSTEM_SETTINGS_MY>](<SYSTEM_SETTINGS_GPRS>[<SYSTEM_SETTINGS_FUNCTION>]){item}[<SYSTEM_SETTINGS_YIXIA>][<USER.nomean_end>]){Intent.gprs_on};
+<rule_system_settings_open_gprs_1> = ([<USER.nomean_begin>][把|将][<SYSTEM_SETTINGS_MY>](<SYSTEM_SETTINGS_GPRS>[<SYSTEM_SETTINGS_FUNCTION>]){item}[<SYSTEM_SETTINGS_OPEN>][<SYSTEM_SETTINGS_YIXIA>][<USER.nomean_end>]){Intent.gprs_on};
+//关闭GPRS
+<rule_system_settings_close_gprs_0> = ([<USER.nomean_begin>]<SYSTEM_SETTINGS_CLOSE>[<SYSTEM_SETTINGS_YIXIA>][<SYSTEM_SETTINGS_MY>](<SYSTEM_SETTINGS_GPRS>[<SYSTEM_SETTINGS_FUNCTION>]){item}[<SYSTEM_SETTINGS_YIXIA>][<USER.nomean_end>]){Intent.gprs_off};
+<rule_system_settings_close_gprs_1> = ([<USER.nomean_begin>][把|将][<SYSTEM_SETTINGS_MY>](<SYSTEM_SETTINGS_GPRS>[<SYSTEM_SETTINGS_FUNCTION>]){item}<SYSTEM_SETTINGS_CLOSE>[<SYSTEM_SETTINGS_YIXIA>][<USER.nomean_end>]){Intent.gprs_off};
+
+//打开2g
+<rule_system_settings_open_2g_0> = ([<USER.nomean_begin>][<SYSTEM_SETTINGS_OPEN>][<SYSTEM_SETTINGS_YIXIA>][<SYSTEM_SETTINGS_MY>](<SYSTEM_SETTINGS_2G>[<SYSTEM_SETTINGS_FUNCTION>]){item}[<SYSTEM_SETTINGS_YIXIA>][<USER.nomean_end>]){Intent.2g_on};
+<rule_system_settings_open_2g_1> = ([<USER.nomean_begin>][把|将][<SYSTEM_SETTINGS_MY>](<SYSTEM_SETTINGS_2G>[<SYSTEM_SETTINGS_FUNCTION>]){item}[<SYSTEM_SETTINGS_OPEN>][<SYSTEM_SETTINGS_YIXIA>][<USER.nomean_end>]){Intent.2g_on};
+//关闭2g
+<rule_system_settings_close_2g_0> = ([<USER.nomean_begin>]<SYSTEM_SETTINGS_CLOSE>[<SYSTEM_SETTINGS_YIXIA>][<SYSTEM_SETTINGS_MY>](<SYSTEM_SETTINGS_2G>[<SYSTEM_SETTINGS_FUNCTION>]){item}[<SYSTEM_SETTINGS_YIXIA>][<USER.nomean_end>]){Intent.2g_off};
+<rule_system_settings_close_2g_1> = ([<USER.nomean_begin>][把|将][<SYSTEM_SETTINGS_MY>](<SYSTEM_SETTINGS_2G>[<SYSTEM_SETTINGS_FUNCTION>]){item}<SYSTEM_SETTINGS_CLOSE>[<SYSTEM_SETTINGS_YIXIA>][<USER.nomean_end>]){Intent.2g_off};
+
+
+//dict
+<SYSTEM_SETTINGS_OPEN> = (打开|开启|启动|切换|切入|开一下|开下|开|启用|连接|运行|调出|开开|登录|进入);
+<SYSTEM_SETTINGS_CLOSE> = (关闭|关上|关了|停止|取消|关掉|关一下|关下|关|退出|断开|停掉|退掉);
+<SYSTEM_SETTINGS_INCREASE> = (增大|调节大|增加|放大|调大|变大|加大);
+<SYSTEM_SETTINGS_DECREASE> = (调节小|调小|变小|缩小|放小);
+<SYSTEM_SETTINGS_VIEW> = (查|看|看看|查看|察看|检查|显示|查询|搜索|搜|查一查|给出|告诉我|查询|核查);
+<SYSTEM_SETTINGS_RESTART> = (重启|重新启动);
+<SYSTEM_SETTINGS_QUIT> = (退出);
+<SYSTEM_SETTINGS_SET> = (设置|设定|设|修改|校正|修正|校准|调整|更换|换|更改|改|调|调节|变|改一改|调换|改改|换换|换掉|换下|改换|变更)[系统];
+<SYSTEM_SETTINGS_MY> = (我[的]);
+<SYSTEM_SETTINGS_FUNCTION> = 功能;
+<SYSTEM_SETTINGS_YIXIA> = ([一]下);
+<SYSTEM_SETTINGS_YIDIAN> = ([一]点[儿]|[一]些|一丢丢);
+<SYSTEM_SETTINGS_YIGE> = ([一]个);
+<SYSTEM_SETTINGS_NO> = (不能|不要|不准|千万别|别|不用|不许);
+<SYSTEM_SETTINGS_NOW> = (现在|立刻|马上|立即|赶紧|赶快|立马);
+<SYSTEM_SETTINGS_HOUR> = (小时|时|钟头);
+<SYSTEM_SETTINGS_MINUTE> = (分钟|分);
+<SYSTEM_SETTINGS_SECOND> = (秒钟|秒);
+<SYSTEM_SETTINGS_BECOME> = (成|为|到|至|的|得);
+<SYSTEM_SETTINGS_CONTINUE> = (继续|再|在);
+
+<SYSTEM_SETTINGS_VEHICLE> = (驾驶模式|驾驶辅助|车载模式);
+<SYSTEM_SETTINGS_GPRS> = (gprs|GPRS);
+<SYSTEM_SETTINGS_2G> = (二G|2G|2g|二g);
+<SYSTEM_SETTINGS_3G> = (3G|3g|三G|三g);
+<SYSTEM_SETTINGS_4G> = (4G|四G|四g|4g);
+<SYSTEM_SETTINGS_5G> = (五G|5G|5g|五g);
+<SYSTEM_SETTINGS_NFC> = (NFC|nfc);
+<SYSTEM_SETTINGS_RING_SHAKE> = ((振动|震动)[模式]);
+<SYSTEM_SETTINGS_VOICE_DEBUG> = (语音调试);
+<SYSTEM_SETTINGS_DISTURB> = (免打扰模式|免打扰);
+<SYSTEM_SETTINGS_ROTATE> = (旋转模式|屏幕旋转模式|旋转|屏幕旋转);
+<SYSTEM_SETTINGS_WIFI> = (WIFI|wlan|手机无线网络|手机WIFI|wifi|无线网|手机无线网|WLAN|手机WLAN|手机wlan|无线网络|手机wifi|无线);
+<SYSTEM_SETTINGS_HOTSPOT> = (便携热点|wifi热点|便携式热点|无线热点|WIFI热点|热点)[设置界面|设置页面];
+<SYSTEM_SETTINGS_BLUETOOTH> = (蓝牙|bluetooth);
+<SYSTEM_SETTINGS_USB> = (USB模式|usb模式|usb|USB);
+<SYSTEM_SETTINGS_DATA> = (数据连接手机移动流量|移动数据|流量|移动流量|手机流量|手机移动数据流量|移动数据流量|手机移动数据);
+<SYSTEM_SETTINGS_TBZH> = (同步账户);
+<SYSTEM_SETTINGS_NETWORK> = (手机网络|数据网络|手机数据网络|移动网络|网络);
+<SYSTEM_SETTINGS_GPS> = (定位|GPS定位|GPS手机定位|手机定位|gps手机定位|gps定位|gps|手机gps定位|GPS|手机GPS定位|定位系统);
+<SYSTEM_SETTINGS_TIMER> = (计时器|计时);
+<SYSTEM_SETTINGS_TOUCH_REFLECT> = (触感反应);
+<SYSTEM_SETTINGS_AUTO_LOCK> = (自动锁屏);
+<SYSTEM_SETTINGS_SCREENSHOT> = (截图|截屏);
+<SYSTEM_SETTINGS_FLIGHT> = (飞行模式|飞行);
+<SYSTEM_SETTINGS_MUTE> = (静音模式|静音);
+<SYSTEM_SETTINGS_RING> = ((正常|响铃)[模式]);
+<SYSTEM_SETTINGS_OUTDOORS> = (户外模式|户外);
+<SYSTEM_SETTINGS_NORMAL> = (正常模式|户外);
+<SYSTEM_SETTINGS_MEETING> = (会议模式|户外);
+<SYSTEM_SETTINGS_CAMERA> = (摄像头);
+<SYSTEM_SETTINGS_FRONT_CAMERA> = (前置);
+<SYSTEM_SETTINGS_BACK_CAMERA> = (后置);
+<SYSTEM_SETTINGS_FONT> = (字号|字体|字);
+<SYSTEM_SETTINGS_BATTERY> = [我[的|这]][手机][的][电池|电|电量|电池电量][[还](有|剩[下]|剩余)](多少[电池|电|电量|电池电量])(剩(余|下));
+<SYSTEM_SETTINGS_SHUTDOWN> = (关机|关闭手机|关下手机|关下机|关掉电源|关闭电源|自动关机|关闭系统|再见);
+<SYSTEM_SETTINGS_STARTUP> = (开启手机|开下机|开机|开下手机|打开电源);
+<SYSTEM_SETTINGS_DESKTOP> = (桌面);
+<SYSTEM_SETTINGS_CENTER> = (个人中心);
+<SYSTEM_SETTINGS_LOCK_SCREEN> = (关闭屏幕|灭屏|锁定屏幕|锁屏);
+<SYSTEM_SETTINGS_THEME> = (主题|桌面主题);
+<SYSTEM_SETTINGS_WALLPAPER> = (壁纸|桌面壁纸|背景|背景图);
+<SYSTEM_SETTINGS_SCREEN_EFFECT> = 滑屏特效;
+<SYSTEM_SETTINGS_WARN_VOICE> = 警告音量;
+<SYSTEM_SETTINGS_MEDIA_VOICE> = (媒体音量|音乐声);
+<SYSTEM_SETTINGS_VOICE> = (音量级别|声音大小|手机音量|音量|声音|声|点声|手机音量级别|彩铃|铃声);
+<SYSTEM_SETTINGS_VOICE_UP> = (高|大|响|提高|增加|增高|增大|加大);
+<SYSTEM_SETTINGS_VOICE_DOWN> = (低|小|降低|减小);
+<SYSTEM_SETTINGS_VOICE_MAX> = (最(高|大|响));
+<SYSTEM_SETTINGS_VOICE_MIN> = (最(低|小));
+<SYSTEM_SETTINGS_DISPLAY> = (显示|屏幕显示);
+<SYSTEM_SETTINGS_CLOCK> = (手机时间|手机时区|时间日期|日期|时间|手机时钟|时区|时钟);
+<SYSTEM_SETTINGS_APP_LIST> = 应用列表;
+<SYSTEM_SETTINGS_SHORTCUT> = 快捷方式;
+<SYSTEM_SETTINGS_IP_ADDRESS> = (IP|ip)[地址];
+<SYSTEM_SETTINGS_SYSTEM_VERSION> = 系统版本;
+<SYSTEM_SETTINGS_SCREEN> = 屏幕;
+<SYSTEM_SETTINGS_BRIGHTNESS> = 亮度;
+<SYSTEM_SETTINGS_BRIGHTNESS_UP> = (亮|高);
+<SYSTEM_SETTINGS_BRIGHTNESS_DOWN> = (暗|低);
+<SYSTEM_SETTINGS_BRIGHTNESS_MAX> = (最(亮|大|高));
+<SYSTEM_SETTINGS_BRIGHTNESS_MIN> = (最(暗|小|低));
